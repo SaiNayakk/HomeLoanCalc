@@ -23,6 +23,9 @@ export function LoanCharts({ calculation }: ChartsProps) {
 
   const formatShortINR = (value: number) => {
     const abs = Math.abs(value);
+    if (abs >= 1000 && abs < 100000) {
+      return `${(value / 1000).toFixed(1)}k`;
+    }
     if (abs >= 10000000) {
       return `${(value / 10000000).toFixed(1)}Cr`;
     }
@@ -104,9 +107,9 @@ export function LoanCharts({ calculation }: ChartsProps) {
       {/* Chart 1: Loan Balance Decline */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">📉 Loan Balance Over Time</h3>
-        <p className="text-sm text-gray-600 mb-6">Watch your loan balance decrease with each payment</p>
-        <div className="h-px w-full bg-gray-200 mb-6"></div>
-        <div className="pt-2">
+        <p className="text-sm text-gray-600 mb-10">Watch your loan balance decrease with each payment</p>
+        <div className="h-px w-full bg-gray-200 mb-8"></div>
+        <div style={{ marginTop: 24, paddingTop: 16 }}>
           <ResponsiveContainer width="100%" height={300}>
           <LineChart data={balanceChartData}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -148,7 +151,7 @@ export function LoanCharts({ calculation }: ChartsProps) {
           See how much of your EMI goes to principal vs interest
         </p>
         <div className="h-px w-full bg-gray-200 mb-6"></div>
-        <div className="pt-2">
+        <div style={{ marginTop: 24, paddingTop: 16 }}>
           <ResponsiveContainer width="100%" height={300}>
           <BarChart data={emiBreakdownData}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -182,7 +185,7 @@ export function LoanCharts({ calculation }: ChartsProps) {
           Compare principal repaid vs interest paid each year
         </p>
         <div className="h-px w-full bg-gray-200 mb-6"></div>
-        <div className="pt-2">
+        <div style={{ marginTop: 24, paddingTop: 16 }}>
           <ResponsiveContainer width="100%" height={300}>
           <BarChart data={yearlyData}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -216,7 +219,7 @@ export function LoanCharts({ calculation }: ChartsProps) {
         </h3>
         <p className="text-sm text-gray-600 mb-6">Track cumulative payments over the loan period</p>
         <div className="h-px w-full bg-gray-200 mb-6"></div>
-        <div className="pt-2">
+        <div style={{ marginTop: 24, paddingTop: 16 }}>
           <ResponsiveContainer width="100%" height={300}>
           <AreaChart data={cumulativeData}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -266,7 +269,7 @@ export function LoanCharts({ calculation }: ChartsProps) {
           Watch how your monthly interest payment decreases over time
         </p>
         <div className="h-px w-full bg-gray-200 mb-6"></div>
-        <div className="pt-2">
+        <div style={{ marginTop: 24, paddingTop: 16 }}>
           <ResponsiveContainer width="100%" height={250}>
           <LineChart data={schedule.filter((_, idx) => idx % Math.ceil(schedule.length / 50) === 0 || idx === schedule.length - 1)}>
             <CartesianGrid strokeDasharray="3 3" />

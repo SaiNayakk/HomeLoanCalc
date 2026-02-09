@@ -366,20 +366,89 @@ function App() {
                   <>
                     <SavingsSection calculation={displayCalculation} />
                     <FirstYearSection calculation={displayCalculation} />
+                    {baseCalculation && (
+                      <ExpandableSection title="Scenario Comparison" icon="🔄" defaultOpen={scenarios.length > 0}>
+                        {scenarios.length > 0 ? (
+                          <ScenarioComparison baseCalculation={baseCalculation} scenarios={scenarios} />
+                        ) : (
+                          <div style={{ textAlign: 'center', padding: '1.5rem' }}>
+                            <p style={{ color: '#475569', fontWeight: 600 }}>
+                              Add prepayment or rate changes to compare scenarios.
+                            </p>
+                          </div>
+                        )}
+                      </ExpandableSection>
+                    )}
                     <AmortizationSection calculation={displayCalculation} />
                     <VisualizationSection calculation={displayCalculation} />
+                    <section
+                      style={{
+                        marginTop: '2.5rem',
+                        padding: '2rem',
+                        borderRadius: '1rem',
+                        border: '1px solid #e2e8f0',
+                        background: '#ffffff',
+                        boxShadow: '0 12px 24px rgba(15, 23, 42, 0.06)',
+                      }}
+                    >
+                      <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0f172a', marginBottom: '0.75rem' }}>
+                        Home Loan FAQs
+                      </h2>
+                      <p style={{ color: '#64748b', marginBottom: '1.5rem' }}>
+                        Quick answers to common home loan questions to help you plan better.
+                      </p>
+                      <div style={{ display: 'grid', gap: '1rem' }}>
+                        <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+                          <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.4rem' }}>
+                            What is EMI and how is it calculated?
+                          </h3>
+                          <p style={{ color: '#475569' }}>
+                            EMI (Equated Monthly Installment) is your fixed monthly repayment. It is calculated using
+                            the principal, interest rate, and tenure so that each payment includes both interest and
+                            principal.
+                          </p>
+                        </div>
+                        <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+                          <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.4rem' }}>
+                            How does tenure affect total interest?
+                          </h3>
+                          <p style={{ color: '#475569' }}>
+                            A longer tenure lowers EMI but increases total interest paid. A shorter tenure increases
+                            EMI but reduces interest cost.
+                          </p>
+                        </div>
+                        <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+                          <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.4rem' }}>
+                            What is the benefit of prepaying a home loan?
+                          </h3>
+                          <p style={{ color: '#475569' }}>
+                            Prepayments reduce outstanding principal, which cuts interest and can shorten the loan
+                            tenure significantly.
+                          </p>
+                        </div>
+                        <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+                          <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.4rem' }}>
+                            Is it better to reduce EMI or tenure when rates change?
+                          </h3>
+                          <p style={{ color: '#475569' }}>
+                            Reducing tenure saves more interest in the long run, while reducing EMI improves monthly
+                            cash flow. Choose based on your financial comfort.
+                          </p>
+                        </div>
+                        <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
+                          <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a', marginBottom: '0.4rem' }}>
+                            How do rate changes affect my loan?
+                          </h3>
+                          <p style={{ color: '#475569' }}>
+                            Higher rates increase interest cost; lower rates reduce it. You can choose to keep EMI the
+                            same and shorten tenure or keep tenure and reduce EMI.
+                          </p>
+                        </div>
+                      </div>
+                    </section>
                   </>
                 )}
 
-                {scenarios.length > 0 && baseCalculation && (
-                  <ScenarioComparison baseCalculation={baseCalculation} scenarios={scenarios} />
-                )}
-
-                {displayCalculation && !scenarios.length && (
-                  <div style={{ background: 'linear-gradient(135deg, #f1f5f9, #eff6ff)', borderRadius: '1rem', border: '2px dashed #cbd5e1', padding: '2rem', textAlign: 'center' }}>
-                    <p style={{ color: '#475569', fontWeight: 600 }}>✨ Add prepayment or rates to compare</p>
-                  </div>
-                )}
               </div>
             </Grid>
           </Grid>
