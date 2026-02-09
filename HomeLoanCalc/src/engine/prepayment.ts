@@ -5,6 +5,19 @@
 import type { LoanInput, PrepaymentOptions, AmortizationRow, LoanCalculation, VariableRateScenario, EMIStepUpScenario } from './types';
 import { calculateEMI } from './calculator';
 
+const getMonthIndexFromDate = (emiStartDate?: string, targetDate?: string) => {
+  if (!emiStartDate || !targetDate) {
+    return null;
+  }
+  const start = new Date(emiStartDate);
+  const target = new Date(targetDate);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(target.getTime())) {
+    return null;
+  }
+  const monthDiff = (target.getFullYear() - start.getFullYear()) * 12 + (target.getMonth() - start.getMonth());
+  return Math.max(1, monthDiff + 1);
+};
+
 /**
  * Generate amortization schedule with prepayment options
  */
@@ -28,13 +41,20 @@ export function generateScheduleWithPrepayment(
     let extraPrincipalPayment = 0;
 
     // Handle extra monthly EMI
-    if (prepayment?.extraEMIMonthly) {
-      extraPrincipalPayment += Math.min(prepayment.extraEMIMonthly, balance);
+    if (prepayment?.extraEMIEnabled !== false && prepayment?.extraEMIMonthly) {
+      const startMonth = getMonthIndexFromDate(input.emiStartDate, prepayment.extraEMIStartDate) ?? 1;
+      const frequency = Math.max(1, prepayment.extraEMIFrequencyMonths ?? 1);
+      if (month >= startMonth && (month - startMonth) % frequency === 0) {
+        extraPrincipalPayment += Math.min(prepayment.extraEMIMonthly, balance);
+      }
     }
 
     // Handle lump sum prepayment at specific month
-    if (prepayment?.lumpSumPayment && month === prepayment.lumpSumPayment.month) {
+    if (prepayment?.lumpSumEnabled !== false && prepayment?.lumpSumPayment) {
+      const lumpSumMonth = getMonthIndexFromDate(input.emiStartDate, prepayment.lumpSumPayment.date) ?? prepayment.lumpSumPayment.month;
+      if (month === lumpSumMonth) {
       extraPrincipalPayment += Math.min(prepayment.lumpSumPayment.amount, balance);
+      }
     }
 
     totalExtraPayments += extraPrincipalPayment;
@@ -79,7 +99,7 @@ export function generateScheduleWithVariableRate(
   variableRate: VariableRateScenario,
   prepayment?: PrepaymentOptions
 ): LoanCalculation {
-  const baseEMI = calculateEMI(input).emi;
+  let baseEMI = calculateEMI(input).emi;
   const schedule: AmortizationRow[] = [];
 
   let balance = input.principal;
@@ -100,6 +120,14 @@ export function generateScheduleWithVariableRate(
     // Check if rate changes this month
     if (rateMap.has(month)) {
       currentRate = rateMap.get(month) || currentRate;
+      if (variableRate.rateChangeMode === 'reduce-emi') {
+        const remainingMonths = Math.max(1, input.tenureMonths - (month - 1));
+        baseEMI = calculateEMI({
+          principal: balance,
+          annualRate: currentRate,
+          tenureMonths: remainingMonths,
+        }).emi;
+      }
     }
 
     const openingBalance = balance;
@@ -108,12 +136,19 @@ export function generateScheduleWithVariableRate(
     const principalPayment = baseEMI - interestPayment;
     let extraPrincipalPayment = 0;
 
-    if (prepayment?.extraEMIMonthly) {
-      extraPrincipalPayment += Math.min(prepayment.extraEMIMonthly, balance);
+    if (prepayment?.extraEMIEnabled !== false && prepayment?.extraEMIMonthly) {
+      const startMonth = getMonthIndexFromDate(input.emiStartDate, prepayment.extraEMIStartDate) ?? 1;
+      const frequency = Math.max(1, prepayment.extraEMIFrequencyMonths ?? 1);
+      if (month >= startMonth && (month - startMonth) % frequency === 0) {
+        extraPrincipalPayment += Math.min(prepayment.extraEMIMonthly, balance);
+      }
     }
 
-    if (prepayment?.lumpSumPayment && month === prepayment.lumpSumPayment.month) {
+    if (prepayment?.lumpSumEnabled !== false && prepayment?.lumpSumPayment) {
+      const lumpSumMonth = getMonthIndexFromDate(input.emiStartDate, prepayment.lumpSumPayment.date) ?? prepayment.lumpSumPayment.month;
+      if (month === lumpSumMonth) {
       extraPrincipalPayment += Math.min(prepayment.lumpSumPayment.amount, balance);
+      }
     }
 
     totalExtraPayments += extraPrincipalPayment;
@@ -180,12 +215,19 @@ export function generateScheduleWithEMIStepUp(
     const principalPayment = Math.min(currentEMI - interestPayment, balance);
     let extraPrincipalPayment = 0;
 
-    if (prepayment?.extraEMIMonthly) {
-      extraPrincipalPayment += Math.min(prepayment.extraEMIMonthly, balance - principalPayment);
+    if (prepayment?.extraEMIEnabled !== false && prepayment?.extraEMIMonthly) {
+      const startMonth = getMonthIndexFromDate(input.emiStartDate, prepayment.extraEMIStartDate) ?? 1;
+      const frequency = Math.max(1, prepayment.extraEMIFrequencyMonths ?? 1);
+      if (month >= startMonth && (month - startMonth) % frequency === 0) {
+        extraPrincipalPayment += Math.min(prepayment.extraEMIMonthly, balance - principalPayment);
+      }
     }
 
-    if (prepayment?.lumpSumPayment && month === prepayment.lumpSumPayment.month) {
+    if (prepayment?.lumpSumEnabled !== false && prepayment?.lumpSumPayment) {
+      const lumpSumMonth = getMonthIndexFromDate(input.emiStartDate, prepayment.lumpSumPayment.date) ?? prepayment.lumpSumPayment.month;
+      if (month === lumpSumMonth) {
       extraPrincipalPayment += Math.min(prepayment.lumpSumPayment.amount, balance - principalPayment);
+      }
     }
 
     totalExtraPayments += extraPrincipalPayment;

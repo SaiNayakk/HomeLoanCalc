@@ -1,5 +1,5 @@
 import type { PrepaymentOptions } from '../engine';
-import { Box, Divider, InputAdornment, Paper, Stack, TextField, Typography } from '@mui/material';
+import { Box, Divider, FormControlLabel, InputAdornment, Paper, Stack, Switch, TextField, Typography } from '@mui/material';
 
 interface PrepaymentInputProps {
   prepayment: PrepaymentOptions;
@@ -15,13 +15,42 @@ export function PrepaymentInput({ prepayment, onPrepaymentChange }: PrepaymentIn
     });
   };
 
-  const handleLumpSumMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const month = parseInt(e.target.value, 10) || 1;
+  const handleExtraEMIEnabledChange = (_e: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
+    onPrepaymentChange({
+      ...prepayment,
+      extraEMIEnabled: checked,
+    });
+  };
+
+  const handleExtraEMIFrequencyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Math.max(1, parseInt(e.target.value, 10) || 1);
+    onPrepaymentChange({
+      ...prepayment,
+      extraEMIFrequencyMonths: value,
+    });
+  };
+
+  const handleExtraEMIStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onPrepaymentChange({
+      ...prepayment,
+      extraEMIStartDate: e.target.value,
+    });
+  };
+
+  const handleLumpSumEnabledChange = (_e: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
+    onPrepaymentChange({
+      ...prepayment,
+      lumpSumEnabled: checked,
+    });
+  };
+
+  const handleLumpSumDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onPrepaymentChange({
       ...prepayment,
       lumpSumPayment: {
-        month,
+        month: prepayment.lumpSumPayment?.month || 1,
         amount: prepayment.lumpSumPayment?.amount || 0,
+        date: e.target.value,
       },
     });
   };
@@ -33,6 +62,24 @@ export function PrepaymentInput({ prepayment, onPrepaymentChange }: PrepaymentIn
       lumpSumPayment: {
         month: prepayment.lumpSumPayment?.month || 1,
         amount,
+        date: prepayment.lumpSumPayment?.date,
+      },
+    });
+  };
+
+  const handleLumpSumQuickDate = (years: number) => {
+    const start = prepayment.extraEMIStartDate
+      ? new Date(prepayment.extraEMIStartDate)
+      : new Date();
+    const target = new Date(start);
+    target.setFullYear(target.getFullYear() + years);
+    const iso = target.toISOString().split('T')[0];
+    onPrepaymentChange({
+      ...prepayment,
+      lumpSumPayment: {
+        month: prepayment.lumpSumPayment?.month || 1,
+        amount: prepayment.lumpSumPayment?.amount || 0,
+        date: iso,
       },
     });
   };
@@ -51,25 +98,52 @@ export function PrepaymentInput({ prepayment, onPrepaymentChange }: PrepaymentIn
       >
         <Stack spacing={2}>
           <Typography fontWeight={700} fontSize={13} letterSpacing={1} textTransform="uppercase" color="#0f172a">
-            💰 Extra Monthly Amount
+            Extra Monthly Amount
           </Typography>
-          <TextField
-            type="number"
-            value={prepayment.extraEMIMonthly || ''}
-            onChange={handleExtraEMIChange}
-            placeholder="5,000"
-            fullWidth
-            InputProps={{
-              startAdornment: <InputAdornment position="start">₹</InputAdornment>,
-            }}
-            inputProps={{ min: 0, step: 1000 }}
-            helperText="Pay extra every month to reduce interest faster."
+          <FormControlLabel
+            control={<Switch checked={prepayment.extraEMIEnabled ?? true} onChange={handleExtraEMIEnabledChange} />}
+            label="Enable monthly prepayment"
           />
-          <Box display="flex" justifyContent="flex-end">
-            <Typography fontWeight={700} color="#0f172a">
-              ₹{prepayment.extraEMIMonthly.toLocaleString('en-IN')}
-            </Typography>
-          </Box>
+          {prepayment.extraEMIEnabled !== false && (
+            <>
+              <TextField
+                type="number"
+                value={prepayment.extraEMIMonthly || ''}
+                onChange={handleExtraEMIChange}
+                placeholder="5,000"
+                fullWidth
+                InputProps={{
+                  startAdornment: <InputAdornment position="start">₹</InputAdornment>,
+                }}
+                inputProps={{ min: 0, step: 1000 }}
+                helperText="Pay extra every month to reduce interest faster."
+              />
+              <TextField
+                type="number"
+                value={prepayment.extraEMIFrequencyMonths ?? 1}
+                onChange={handleExtraEMIFrequencyChange}
+                placeholder="12"
+                fullWidth
+                label="Every (months)"
+                inputProps={{ min: 1, step: 1 }}
+                helperText="Set 12 for yearly, 3 for quarterly, etc."
+              />
+              <TextField
+                type="date"
+                value={prepayment.extraEMIStartDate || ''}
+                onChange={handleExtraEMIStartDateChange}
+                fullWidth
+                label="Start date"
+                InputLabelProps={{ shrink: true }}
+                helperText="Date from which extra payments start."
+              />
+              <Box display="flex" justifyContent="flex-end">
+                <Typography fontWeight={700} color="#0f172a">
+                  {prepayment.extraEMIMonthly.toLocaleString('en-IN')}
+                </Typography>
+              </Box>
+            </>
+          )}
         </Stack>
       </Paper>
 
@@ -87,41 +161,98 @@ export function PrepaymentInput({ prepayment, onPrepaymentChange }: PrepaymentIn
       >
         <Stack spacing={2}>
           <Typography fontWeight={700} fontSize={13} letterSpacing={1} textTransform="uppercase" color="#0f172a">
-            📦 One-time Lump Sum
+            One-time Lump Sum
           </Typography>
-          <Stack spacing={2}>
-            <TextField
-              type="number"
-              value={prepayment.lumpSumPayment?.month || 1}
-              onChange={handleLumpSumMonthChange}
-              placeholder="12"
-              fullWidth
-              label="After Month"
-              inputProps={{ min: 1, max: 600 }}
-              helperText="After which month?"
-            />
-            <TextField
-              type="number"
-              value={prepayment.lumpSumPayment?.amount || ''}
-              onChange={handleLumpSumAmountChange}
-              placeholder="2,00,000"
-              fullWidth
-              label="Amount"
-              InputProps={{
-                startAdornment: <InputAdornment position="start">₹</InputAdornment>,
-              }}
-              inputProps={{ min: 0, step: 100000 }}
-              helperText="E.g., bonus, inheritance, savings."
-            />
-          </Stack>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
-            <Typography color="#64748b" fontSize={12}>
-              Selected
-            </Typography>
-            <Typography fontWeight={700} color="#0f172a">
-              ₹{(prepayment.lumpSumPayment?.amount || 0).toLocaleString('en-IN')}
-            </Typography>
-          </Box>
+          <FormControlLabel
+            control={<Switch checked={prepayment.lumpSumEnabled ?? false} onChange={handleLumpSumEnabledChange} />}
+            label="Enable lump sum payment"
+          />
+          {prepayment.lumpSumEnabled && (
+            <>
+              <Stack spacing={2}>
+                <TextField
+                  type="date"
+                  value={prepayment.lumpSumPayment?.date || ''}
+                  onChange={handleLumpSumDateChange}
+                  fullWidth
+                  label="Payment date"
+                  InputLabelProps={{ shrink: true }}
+                  helperText="Date you plan to make the lump sum payment."
+                />
+                <Box display="flex" gap={1} flexWrap="wrap">
+                  <button
+                    type="button"
+                    style={{
+                      border: '1px solid #e2e8f0',
+                      borderRadius: 999,
+                      padding: '6px 12px',
+                      background: '#fff',
+                      fontSize: 12,
+                      color: '#0f172a',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => handleLumpSumQuickDate(1)}
+                  >
+                    +1 year
+                  </button>
+                  <button
+                    type="button"
+                    style={{
+                      border: '1px solid #e2e8f0',
+                      borderRadius: 999,
+                      padding: '6px 12px',
+                      background: '#fff',
+                      fontSize: 12,
+                      color: '#0f172a',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => handleLumpSumQuickDate(5)}
+                  >
+                    +5 years
+                  </button>
+                  <button
+                    type="button"
+                    style={{
+                      border: '1px solid #e2e8f0',
+                      borderRadius: 999,
+                      padding: '6px 12px',
+                      background: '#fff',
+                      fontSize: 12,
+                      color: '#0f172a',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => handleLumpSumQuickDate(10)}
+                  >
+                    +10 years
+                  </button>
+                </Box>
+                <TextField
+                  type="number"
+                  value={prepayment.lumpSumPayment?.amount || ''}
+                  onChange={handleLumpSumAmountChange}
+                  placeholder="2,00,000"
+                  fullWidth
+                  label="Amount"
+                  InputProps={{
+                    startAdornment: <InputAdornment position="start">₹</InputAdornment>,
+                  }}
+                  inputProps={{ min: 0, step: 100000 }}
+                  helperText="E.g., bonus, inheritance, savings."
+                />
+              </Stack>
+              <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Typography color="#64748b" fontSize={12}>
+                  Selected
+                </Typography>
+                <Typography fontWeight={700} color="#0f172a">
+                  ?{(prepayment.lumpSumPayment?.amount || 0).toLocaleString('en-IN')}
+                </Typography>
+              </Box>
+            </>
+          )}
         </Stack>
       </Paper>
     </Stack>

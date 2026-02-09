@@ -14,12 +14,21 @@ export interface LoanInput {
 }
 
 export interface PrepaymentOptions {
+  /** Enable/disable extra EMI payments */
+  extraEMIEnabled?: boolean;
   /** Extra EMI payment monthly (recurring) */
   extraEMIMonthly: number;
+  /** Frequency of extra EMI payment in months (1 = every month, 12 = yearly) */
+  extraEMIFrequencyMonths?: number;
+  /** Start date for extra EMI payments (YYYY-MM-DD) */
+  extraEMIStartDate?: string;
+  /** Enable/disable lump sum payment */
+  lumpSumEnabled?: boolean;
   /** Lump sum prepayment in month specified */
   lumpSumPayment?: {
     month: number;
     amount: number;
+    date?: string;
   };
 }
 
@@ -29,6 +38,14 @@ export interface VariableRateScenario {
     month: number;
     newRate: number;
   }>;
+  /** Date-based rate ranges for UI */
+  ranges?: Array<{
+    startDate: string;
+    endDate: string;
+    rate: number;
+  }>;
+  /** How to handle rate change: keep EMI or keep tenure */
+  rateChangeMode?: 'reduce-tenure' | 'reduce-emi';
 }
 
 export interface EMIStepUpScenario {

@@ -1,5 +1,5 @@
 import type { LoanCalculation } from '../engine';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
@@ -51,7 +51,7 @@ export function LoanSummaryPanel({ calculation, isLoading }: LoanResultsProps) {
       )}
 
       <Grid container spacing={3} alignItems="stretch">
-        <Grid item xs={12} md={7} sx={{ display: 'flex', flexDirection: 'column' }}>
+        <Grid size={{ xs: 12, md: 7 }} sx={{ display: 'flex', flexDirection: 'column' }}>
           <Stack spacing={2} sx={{ height: '100%', minHeight: 520, justifyContent: 'space-between' }}>
               <Paper
                 variant="outlined"
@@ -64,14 +64,15 @@ export function LoanSummaryPanel({ calculation, isLoading }: LoanResultsProps) {
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
+                  alignItems: 'center',
+                  textAlign: 'center',
                 }}
               >
-                <div className="flex items-center gap-2 text-slate-700">
-                  <span>💳</span>
-                  <span className="font-semibold">Monthly EMI</span>
+                <div className="text-center text-slate-700 font-bold text-base underline underline-offset-4">
+                  💳 Monthly EMI
                 </div>
-                <div className="text-slate-900 font-semibold mt-2">₹{monthlyEMI.toLocaleString('en-IN')}</div>
-                <div className="text-slate-500 font-medium">{years}y {months}m tenure</div>
+                <div className="text-center text-slate-900 font-semibold mt-3">₹{monthlyEMI.toLocaleString('en-IN')}</div>
+                <div className="text-center text-slate-500 font-medium mt-1">{years}y {months}m tenure</div>
               </Paper>
 
               <Paper
@@ -85,14 +86,15 @@ export function LoanSummaryPanel({ calculation, isLoading }: LoanResultsProps) {
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
+                  alignItems: 'center',
+                  textAlign: 'center',
                 }}
               >
-                <div className="flex items-center gap-2 text-slate-700">
-                  <span>💰</span>
-                  <span className="font-semibold">Total Payable</span>
+                <div className="text-center text-slate-700 font-bold text-base underline underline-offset-4">
+                  💰 Total Payable
                 </div>
-                <div className="text-slate-900 font-semibold mt-2">₹{totalPayable.toLocaleString('en-IN')}</div>
-                <div className="text-slate-500 font-medium">Over the loan period</div>
+                <div className="text-center text-slate-900 font-semibold mt-3">₹{totalPayable.toLocaleString('en-IN')}</div>
+                <div className="text-center text-slate-500 font-medium mt-1">Over the loan period</div>
               </Paper>
 
               <Paper
@@ -106,14 +108,15 @@ export function LoanSummaryPanel({ calculation, isLoading }: LoanResultsProps) {
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
+                  alignItems: 'center',
+                  textAlign: 'center',
                 }}
               >
-                <div className="flex items-center gap-2 text-slate-700">
-                  <span>📈</span>
-                  <span className="font-semibold">Total Interest</span>
+                <div className="text-center text-slate-700 font-bold text-base underline underline-offset-4">
+                  📈 Total Interest
                 </div>
-                <div className="text-slate-900 font-semibold mt-2">₹{totalInterest.toLocaleString('en-IN')}</div>
-                <div className="text-slate-500 font-medium">
+                <div className="text-center text-slate-900 font-semibold mt-3">₹{totalInterest.toLocaleString('en-IN')}</div>
+                <div className="text-center text-slate-500 font-medium mt-1">
                   {((totalInterest / input.principal) * 100).toFixed(1)}% of principal
                 </div>
               </Paper>
@@ -130,13 +133,14 @@ export function LoanSummaryPanel({ calculation, isLoading }: LoanResultsProps) {
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
+                    alignItems: 'center',
+                    textAlign: 'center',
                   }}
                 >
-                  <div className="flex items-center gap-2 text-slate-700">
-                    <span>📅</span>
-                    <span className="font-semibold">First EMI</span>
+                  <div className="text-center text-slate-700 font-bold text-base underline underline-offset-4">
+                    📅 First EMI
                   </div>
-                  <div className="text-slate-900 font-semibold mt-2">
+                  <div className="text-center text-slate-900 font-semibold mt-3">
                     {emiStartDate.toLocaleDateString('en-IN', { dateStyle: 'long' })}
                   </div>
                 </Paper>
@@ -147,33 +151,36 @@ export function LoanSummaryPanel({ calculation, isLoading }: LoanResultsProps) {
                 sx={{
                   borderRadius: 1,
                   borderColor: '#e2e8f0',
-                  p: 1.5,
-                  flex: 1,
+                  p: 2,
+                  width: '100%',
+                  minHeight: 160,
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'center',
+                  background: '#f8fafc',
+                  boxShadow: '0 12px 24px rgba(15, 23, 42, 0.08)',
                 }}
               >
-                <div className="space-y-2 text-sm text-slate-600">
-                  <div className="flex items-center justify-between">
-                    <span>Principal amount</span>
-                    <span className="font-semibold text-slate-900">₹{input.principal.toLocaleString('en-IN')}</span>
+                <div className="space-y-3 text-sm text-slate-700">
+                  <div className="flex items-center justify-between gap-6">
+                    <span className="font-medium">Principal amount: </span>
+                    <span className="font-semibold" style={{ color: '#1d4ed8' }}>₹{input.principal.toLocaleString('en-IN')}</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span>Total interest</span>
-                    <span className="font-semibold text-slate-900">₹{totalInterest.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                  <div className="flex items-center justify-between gap-6">
+                    <span className="font-medium">Total interest: </span>
+                    <span className="font-semibold" style={{ color: '#1d4ed8' }}>₹{totalInterest.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span>Processing fees</span>
-                    <span className="font-semibold text-slate-900">₹0</span>
+                  <div className="flex items-center justify-between gap-6">
+                    <span className="font-medium">Processing fees </span>
+                    <span className="font-semibold" style={{ color: '#1d4ed8' }}>₹0</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span>Pre-payment</span>
-                    <span className="font-semibold text-slate-900">₹0</span>
+                  <div className="flex items-center justify-between gap-6">
+                    <span className="font-medium">Pre-payment: </span>
+                    <span className="font-semibold" style={{ color: '#1d4ed8' }}>₹0</span>
                   </div>
-                  <div className="flex items-center justify-between pt-1">
-                    <span>{isEmiStarted ? 'Amount pending' : 'Total amount paid'}</span>
-                    <span className="font-bold text-slate-900">₹{(input.principal + totalInterest).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                  <div className="flex items-center justify-between gap-6 pt-2 border-t border-slate-200">
+                    <span className="font-semibold">{isEmiStarted ? 'Amount pending: ' : 'Total amount paid: '}</span>
+                    <span className="font-bold" style={{ color: '#1e40af' }}>₹{(input.principal + totalInterest).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                   </div>
                 </div>
               </Paper>
@@ -181,17 +188,17 @@ export function LoanSummaryPanel({ calculation, isLoading }: LoanResultsProps) {
             </Stack>
         </Grid>
 
-        <Grid item xs={12} md={5} sx={{ display: 'flex', flexDirection: 'column' }}>
+        <Grid size={{ xs: 12, md: 5 }} sx={{ display: 'flex', flexDirection: 'column' }}>
           <Stack spacing={2} sx={{ height: '100%', minHeight: 520, justifyContent: 'space-between' }}>
-            <div style={{ flex: 1, minHeight: 140, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid #e2e8f0', padding: 12 }}>
+            <div style={{ flex: 1, minHeight: 120, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 8 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: '#475569', marginBottom: 6 }}>Total Cost Breakdown</div>
-            <PieChart width={260} height={220}>
+            <PieChart width={220} height={180}>
               <Pie
                 data={pieData}
                 cx="50%"
                 cy="50%"
-                innerRadius={60}
-                outerRadius={110}
+                innerRadius={50}
+                outerRadius={90}
                 dataKey="value"
                 label={false}
               >
@@ -207,9 +214,9 @@ export function LoanSummaryPanel({ calculation, isLoading }: LoanResultsProps) {
             </PieChart>
           </div>
 
-          <div style={{ flex: 1, minHeight: 140, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px solid #e2e8f0', padding: 12 }}>
+          <div style={{ flex: 1, minHeight: 120, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 8 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: '#475569', marginBottom: 6 }}>First EMI Split</div>
-            <PieChart width={260} height={220}>
+            <PieChart width={220} height={180}>
               <Pie
                 data={[
                   { name: 'Principal (1st EMI)', value: calculation.schedule[0]?.principal || 0 },
@@ -217,8 +224,8 @@ export function LoanSummaryPanel({ calculation, isLoading }: LoanResultsProps) {
                 ]}
                 cx="50%"
                 cy="50%"
-                innerRadius={60}
-                outerRadius={110}
+                innerRadius={50}
+                outerRadius={90}
                 dataKey="value"
                 label={false}
               >
@@ -285,35 +292,80 @@ export function FirstYearSection({ calculation }: { calculation: LoanCalculation
 
   return (
     <ExpandableSection title="First Year Breakdown" icon="📊" defaultOpen={false}>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-white rounded-xl p-4 border border-slate-200 hover:shadow-sm transition">
-          <p className="text-blue-600 text-xs font-bold uppercase tracking-wide mb-2">Annual EMI</p>
-          <p className="text-2xl font-bold text-blue-900">
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: 12,
+        }}
+      >
+        <div
+          style={{
+            borderRadius: 12,
+            padding: 16,
+            border: '1px solid #bfdbfe',
+            background: 'linear-gradient(90deg, #eff6ff, #e0f2fe)',
+          }}
+        >
+          <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: 0.8, color: '#1d4ed8', marginBottom: 6 }}>
+            ANNUAL EMI
+          </div>
+          <div style={{ fontSize: 22, fontWeight: 800, color: '#1e3a8a' }}>
             ₹{(monthlyEMI * 12).toLocaleString('en-IN')}
-          </p>
+          </div>
         </div>
-        <div className="bg-white rounded-xl p-4 border border-slate-200 hover:shadow-sm transition">
-          <p className="text-orange-600 text-xs font-bold uppercase tracking-wide mb-2">1st Yr Interest</p>
-          <p className="text-2xl font-bold text-orange-900">
+
+        <div
+          style={{
+            borderRadius: 12,
+            padding: 16,
+            border: '1px solid #fed7aa',
+            background: 'linear-gradient(90deg, #fff7ed, #ffedd5)',
+          }}
+        >
+          <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: 0.8, color: '#ea580c', marginBottom: 6 }}>
+            1ST YR INTEREST
+          </div>
+          <div style={{ fontSize: 22, fontWeight: 800, color: '#9a3412' }}>
             ₹{(calculation.schedule.slice(0, 12).reduce((sum, row) => sum + row.interest, 0)).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-          </p>
+          </div>
         </div>
-        <div className="bg-white rounded-xl p-4 border border-slate-200 hover:shadow-sm transition">
-          <p className="text-green-600 text-xs font-bold uppercase tracking-wide mb-2">1st Yr Principal</p>
-          <p className="text-2xl font-bold text-green-900">
+
+        <div
+          style={{
+            borderRadius: 12,
+            padding: 16,
+            border: '1px solid #bbf7d0',
+            background: 'linear-gradient(90deg, #ecfdf3, #dcfce7)',
+          }}
+        >
+          <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: 0.8, color: '#16a34a', marginBottom: 6 }}>
+            1ST YR PRINCIPAL
+          </div>
+          <div style={{ fontSize: 22, fontWeight: 800, color: '#166534' }}>
             ₹{(calculation.schedule.slice(0, 12).reduce((sum, row) => sum + row.principal, 0)).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
-          </p>
+          </div>
         </div>
-        <div className="bg-white rounded-xl p-4 border border-slate-200 hover:shadow-sm transition">
-          <p className="text-indigo-600 text-xs font-bold uppercase tracking-wide mb-2">I/P Ratio</p>
-          <p className="text-2xl font-bold text-indigo-900">
+
+        <div
+          style={{
+            borderRadius: 12,
+            padding: 16,
+            border: '1px solid #e9d5ff',
+            background: 'linear-gradient(90deg, #f5f3ff, #ede9fe)',
+          }}
+        >
+          <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: 0.8, color: '#7c3aed', marginBottom: 6 }}>
+            I/P RATIO
+          </div>
+          <div style={{ fontSize: 22, fontWeight: 800, color: '#5b21b6' }}>
             {(
               (calculation.schedule.slice(0, 12).reduce((sum, row) => sum + row.interest, 0) /
                 calculation.schedule.slice(0, 12).reduce((sum, row) => sum + row.principal, 0)) *
               100
             ).toFixed(0)}
             %
-          </p>
+          </div>
         </div>
       </div>
     </ExpandableSection>
@@ -364,4 +416,3 @@ export function LoanResults({ calculation, isLoading }: LoanResultsProps) {
     </div>
   );
 }
-
