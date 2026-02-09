@@ -1,73 +1,20 @@
-# React + TypeScript + Vite
+# HomeLoanCalc – EMI Edge Cases
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This app handles a number of edge cases in EMI calculations and scenarios. Key cases supported:
 
-Currently, two official plugins are available:
+- Zero or near-zero interest rate: EMI falls back to simple principal/tenure division.
+- Very short tenures: Handles 1–2 month terms without divide-by-zero issues.
+- Long tenures: Supports up to 600 months (50 years) in schedules.
+- EMI start date in the past: Shows “Amount pending” instead of “Total amount paid.”
+- Prepayment frequency: Extra EMI can be monthly, quarterly, yearly, etc. via frequency in months.
+- Prepayment start date: Extra EMI can start from a specific date.
+- Lump-sum prepayment: Single payment on a chosen date (or month fallback).
+- Variable rate periods: Multiple consecutive rate changes across date ranges.
+- Rate change mode: Choose between reducing EMI or reducing tenure when rate changes.
+- Variable rate with prepayment: Both are combined in schedule calculation.
+- EMI step-up with prepayment: Step-ups account for extra EMI payments.
+- Input validation: Principal > 0, tenure > 0, and non-negative interest.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Notes:
+- Savings are computed against the base schedule (no prepayment).
+- Scenario comparison uses incremental savings between scenarios.
