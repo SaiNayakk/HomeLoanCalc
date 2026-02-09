@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import './App.css';
 import type {
   EMIStepUpScenario,
@@ -13,8 +13,7 @@ import {
   generateScheduleWithPrepayment,
   generateScheduleWithVariableRate,
 } from './engine';
-import { Box } from '@mui/material';
-import Grid from '@mui/material/Grid';
+import { Box, Grid } from '@mui/material';
 import {
   ExpandableSection,
   AdvancedOptions,
@@ -38,7 +37,11 @@ const DEFAULT_INPUT: LoanInput = {
 };
 
 const DEFAULT_PREPAYMENT: PrepaymentOptions = {
+  extraEMIEnabled: true,
   extraEMIMonthly: 0,
+  extraEMIFrequencyMonths: 1,
+  extraEMIStartDate: new Date().toISOString().split('T')[0],
+  lumpSumEnabled: false,
 };
 
 function App() {
@@ -49,32 +52,78 @@ function App() {
   const [showVariableRate, setShowVariableRate] = useState(false);
   const [variableRate, setVariableRate] = useState<VariableRateScenario>({
     changes: [{ month: 61, newRate: 8 }],
+    ranges: [
+      {
+        startDate: DEFAULT_INPUT.emiStartDate || new Date().toISOString().split('T')[0],
+        endDate: DEFAULT_INPUT.emiStartDate || new Date().toISOString().split('T')[0],
+        rate: 8,
+      },
+    ],
+    rateChangeMode: 'reduce-tenure',
   });
   const [showEMIStepUp, setShowEMIStepUp] = useState(false);
   const [emiStepUp, setEMIStepUp] = useState<EMIStepUpScenario>({
     stepUpPercentage: 10,
     intervalMonths: 12,
   });
-  const [isCalculating, setIsCalculating] = useState(false);
-
   const debouncedInput = useDebounce(input, 2000);
   const debouncedPrepayment = useDebounce(prepayment, 2000);
+  const isCalculating = debouncedInput !== input;
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const rawState = params.get('state');
+    if (!rawState) {
+      return;
+    }
+    try {
+      const decoded = JSON.parse(decodeURIComponent(rawState));
+      if (decoded?.input) {
+        setInput((prev) => ({
+          ...prev,
+          ...decoded.input,
+        }));
+      }
+      if (decoded?.prepayment) {
+        setPrepayment((prev) => ({
+          ...prev,
+          ...decoded.prepayment,
+        }));
+      }
+      if (typeof decoded?.prepaymentOpen === 'boolean') {
+        setPrepaymentOpen(decoded.prepaymentOpen);
+      }
+      if (decoded?.variableRate) {
+        setVariableRate(decoded.variableRate);
+        setShowVariableRate(decoded?.showVariableRate ?? true);
+      }
+      if (typeof decoded?.advancedOpen === 'boolean') {
+        setAdvancedOpen(decoded.advancedOpen);
+      }
+      if (decoded?.emiStepUp) {
+        setEMIStepUp(decoded.emiStepUp);
+        setShowEMIStepUp(decoded?.showEMIStepUp ?? true);
+      }
+    } catch (error) {
+      console.error('Failed to parse shared state', error);
+    }
+  }, []);
 
   const baseCalculation = useMemo(() => {
-    setIsCalculating(true);
     try {
-      const result = generateAmortizationSchedule(debouncedInput);
-      setTimeout(() => setIsCalculating(false), 100);
-      return result;
+      return generateAmortizationSchedule(debouncedInput);
     } catch (error) {
-      setIsCalculating(false);
       console.error('Calculation error:', error);
       return null;
     }
   }, [debouncedInput]);
 
   const withPrepaymentCalculation = useMemo(() => {
-    if (!baseCalculation || (debouncedPrepayment.extraEMIMonthly === 0 && !debouncedPrepayment.lumpSumPayment?.amount)) {
+    if (
+      !baseCalculation ||
+      ((debouncedPrepayment.extraEMIEnabled === false || debouncedPrepayment.extraEMIMonthly === 0) &&
+        (debouncedPrepayment.lumpSumEnabled !== true || !debouncedPrepayment.lumpSumPayment?.amount))
+    ) {
       return null;
     }
     try {
@@ -90,24 +139,24 @@ function App() {
       return null;
     }
     try {
-      return generateScheduleWithVariableRate(debouncedInput, variableRate);
+      return generateScheduleWithVariableRate(debouncedInput, variableRate, debouncedPrepayment);
     } catch (error) {
       console.error('Variable rate calculation error:', error);
       return null;
     }
-  }, [debouncedInput, variableRate, showVariableRate, baseCalculation]);
+  }, [debouncedInput, variableRate, showVariableRate, baseCalculation, debouncedPrepayment]);
 
   const withEMIStepUpCalculation = useMemo(() => {
     if (!baseCalculation || !showEMIStepUp) {
       return null;
     }
     try {
-      return generateScheduleWithEMIStepUp(debouncedInput, emiStepUp);
+      return generateScheduleWithEMIStepUp(debouncedInput, emiStepUp, debouncedPrepayment);
     } catch (error) {
       console.error('EMI step-up calculation error:', error);
       return null;
     }
-  }, [debouncedInput, emiStepUp, showEMIStepUp, baseCalculation]);
+  }, [debouncedInput, emiStepUp, showEMIStepUp, baseCalculation, debouncedPrepayment]);
 
   const scenarios = useMemo(() => {
     const scenes: Array<{
@@ -123,8 +172,12 @@ function App() {
     }
 
     if (withVariableRateCalculation) {
+      const label =
+        variableRate.changes.length > 1
+          ? `Rate Changes (${variableRate.changes.length} periods)`
+          : `Rate Change to ${variableRate.changes[0]?.newRate}% at Month ${variableRate.changes[0]?.month}`;
       scenes.push({
-        name: `Rate Hike to ${variableRate.changes[0]?.newRate}% at Month ${variableRate.changes[0]?.month}`,
+        name: label,
         calculation: withVariableRateCalculation,
       });
     }
@@ -146,7 +199,12 @@ function App() {
     emiStepUp,
   ]);
 
-  const displayCalculation = baseCalculation || null;
+  const displayCalculation =
+    withVariableRateCalculation ||
+    withEMIStepUpCalculation ||
+    withPrepaymentCalculation ||
+    baseCalculation ||
+    null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#fff' }}>
@@ -169,7 +227,20 @@ function App() {
             </p>
           </div>
           {displayCalculation && (
-            <ExportActions calculation={displayCalculation} variant="header" />
+            <ExportActions
+              calculation={displayCalculation}
+              variant="header"
+              shareState={{
+                input,
+                prepayment,
+                prepaymentOpen,
+                variableRate,
+                showVariableRate,
+                advancedOpen,
+                emiStepUp,
+                showEMIStepUp,
+              }}
+            />
           )}
         </div>
       </header>
@@ -189,7 +260,7 @@ function App() {
         >
           <Grid container spacing={4} alignItems="stretch">
             {/* Top row: input + summary side-by-side */}
-            <Grid item xs={12} md={7}>
+            <Grid size={{ xs: 12, md: 7 }}>
               <Box
                 sx={{
                   height: '100%',
@@ -203,7 +274,7 @@ function App() {
                 <LoanInputForm input={input} onInputChange={setInput} />
               </Box>
             </Grid>
-            <Grid item xs={12} md={5}>
+            <Grid size={{ xs: 12, md: 5 }}>
               <Box
                 sx={{
                   height: '100%',
@@ -219,7 +290,7 @@ function App() {
             </Grid>
 
             {/* Full-width sections below */}
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
                   {!prepaymentOpen && (
@@ -276,30 +347,32 @@ function App() {
                     open={advancedOpen}
                     onToggle={setAdvancedOpen}
                   >
-                    <AdvancedOptions
-                      showVariableRate={showVariableRate}
-                      onShowVariableRateChange={setShowVariableRate}
-                      variableRate={variableRate}
-                      onVariableRateChange={setVariableRate}
-                      showEMIStepUp={showEMIStepUp}
-                      onShowEMIStepUpChange={setShowEMIStepUp}
-                      emiStepUp={emiStepUp}
-                      onEMIStepUpChange={setEMIStepUp}
-                    />
+                  <AdvancedOptions
+                    showVariableRate={showVariableRate}
+                    onShowVariableRateChange={setShowVariableRate}
+                    variableRate={variableRate}
+                    onVariableRateChange={setVariableRate}
+                    emiStartDate={input.emiStartDate}
+                    tenureMonths={input.tenureMonths}
+                  showEMIStepUp={showEMIStepUp}
+                    onShowEMIStepUpChange={setShowEMIStepUp}
+                    emiStepUp={emiStepUp}
+                    onEMIStepUpChange={setEMIStepUp}
+                  />
                   </ExpandableSection>
                 )}
 
                 {displayCalculation && (
                   <>
                     <SavingsSection calculation={displayCalculation} />
-                <FirstYearSection calculation={displayCalculation} />
+                    <FirstYearSection calculation={displayCalculation} />
                     <AmortizationSection calculation={displayCalculation} />
                     <VisualizationSection calculation={displayCalculation} />
                   </>
                 )}
 
-                {scenarios.length > 0 && displayCalculation && (
-                  <ScenarioComparison baseCalculation={displayCalculation} scenarios={scenarios} />
+                {scenarios.length > 0 && baseCalculation && (
+                  <ScenarioComparison baseCalculation={baseCalculation} scenarios={scenarios} />
                 )}
 
                 {displayCalculation && !scenarios.length && (

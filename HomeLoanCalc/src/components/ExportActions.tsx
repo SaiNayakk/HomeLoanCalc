@@ -4,9 +4,10 @@ import { Button, Paper, Stack, Typography } from '@mui/material';
 interface ExportActionsProps {
   calculation: LoanCalculation;
   variant?: 'card' | 'header';
+  shareState?: unknown;
 }
 
-export function ExportActions({ calculation, variant = 'card' }: ExportActionsProps) {
+export function ExportActions({ calculation, variant = 'card', shareState }: ExportActionsProps) {
   const exportToCSV = () => {
     const headers = [
       'Month',
@@ -54,14 +55,17 @@ export function ExportActions({ calculation, variant = 'card' }: ExportActionsPr
 
   const shareCalculation = () => {
     const url = new URL(window.location.href);
-    url.searchParams.set(
-      'loan',
-      JSON.stringify({
-        principal: calculation.input.principal,
-        annualRate: calculation.input.annualRate,
-        tenureMonths: calculation.input.tenureMonths,
-      })
-    );
+    const payload =
+      shareState ??
+      {
+        input: {
+          principal: calculation.input.principal,
+          annualRate: calculation.input.annualRate,
+          tenureMonths: calculation.input.tenureMonths,
+          emiStartDate: calculation.input.emiStartDate,
+        },
+      };
+    url.searchParams.set('state', encodeURIComponent(JSON.stringify(payload)));
 
     navigator.clipboard.writeText(url.toString()).then(() => {
       alert('Share link copied to clipboard!');

@@ -71,10 +71,11 @@ export function ScenarioComparison({ baseCalculation, scenarios }: ScenarioCompa
             </TableRow>
 
             {scenarios.map((scenario, idx) => {
-              const interestSaved = baseCalculation.totalInterest - scenario.calculation.totalInterest;
-              const interestSavedPercent = ((interestSaved / baseCalculation.totalInterest) * 100).toFixed(1);
+              const reference = idx === 0 ? baseCalculation : scenarios[idx - 1].calculation;
+              const totalSaved = reference.totalPayable - scenario.calculation.totalPayable;
+              const totalSavedPercent = ((totalSaved / reference.totalPayable) * 100).toFixed(1);
               const tenureSaved =
-                baseCalculation.actualTenureMonths - scenario.calculation.actualTenureMonths;
+                reference.actualTenureMonths - scenario.calculation.actualTenureMonths;
 
               return (
                 <TableRow key={idx} hover>
@@ -92,14 +93,33 @@ export function ScenarioComparison({ baseCalculation, scenarios }: ScenarioCompa
                     {scenario.calculation.actualTenureMonths}
                   </TableCell>
                   <TableCell align="right" sx={{ fontWeight: 700, color: '#16a34a' }}>
-                    ₹{interestSaved.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                    ₹{totalSaved.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                     <Box component="span" display="block" fontSize={11} color="#16a34a">
-                      {interestSavedPercent}%{tenureSaved > 0 ? ` | ${tenureSaved}mo` : ''}
+                      {totalSavedPercent}% total
+                      {tenureSaved > 0 ? ` | ${tenureSaved}mo` : ''}
                     </Box>
                   </TableCell>
                 </TableRow>
               );
             })}
+            {scenarios.length > 0 && (
+              <TableRow sx={{ backgroundColor: '#f1f5f9' }}>
+                <TableCell sx={{ fontWeight: 700, color: '#0f172a' }}>
+                  Final Savings (best)
+                </TableCell>
+                <TableCell />
+                <TableCell />
+                <TableCell />
+                <TableCell />
+                <TableCell align="right" sx={{ fontWeight: 800, color: '#16a34a' }}>
+                  {(() => {
+                    const finalScenario = scenarios[scenarios.length - 1];
+                    const finalSaved = baseCalculation.totalPayable - finalScenario.calculation.totalPayable;
+                    return `₹${finalSaved.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+                  })()}
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
