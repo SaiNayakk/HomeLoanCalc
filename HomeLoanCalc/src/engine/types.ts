@@ -9,6 +9,8 @@ export interface LoanInput {
   annualRate: number;
   /** Loan tenure in months */
   tenureMonths: number;
+  /** One-time processing fees */
+  processingFees?: number;
   /** EMI start date (ISO string) */
   emiStartDate?: string;
 }
