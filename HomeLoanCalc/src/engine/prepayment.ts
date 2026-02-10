@@ -78,7 +78,7 @@ export function generateScheduleWithPrepayment(
   }
 
   const totalInterest = schedule.reduce((sum, row) => sum + row.interest, 0);
-  const totalPayable = input.principal + totalInterest + totalExtraPayments;
+  const totalPayable = input.principal + totalInterest + totalExtraPayments + (input.processingFees ?? 0);
 
   return {
     input,
@@ -173,7 +173,7 @@ export function generateScheduleWithVariableRate(
     month++;
   }
 
-  const totalPayable = input.principal + totalInterest + totalExtraPayments;
+  const totalPayable = input.principal + totalInterest + totalExtraPayments + (input.processingFees ?? 0);
 
   return {
     input,
@@ -252,7 +252,7 @@ export function generateScheduleWithEMIStepUp(
     month++;
   }
 
-  const totalPayable = input.principal + totalInterest + totalExtraPayments;
+  const totalPayable = input.principal + totalInterest + totalExtraPayments + (input.processingFees ?? 0);
 
   return {
     input,
@@ -299,7 +299,7 @@ export function calculateRefinance(
   ];
 
   const totalInterest = combinedSchedule.reduce((sum, row) => sum + row.interest, 0);
-  const totalPayable = currentCalculation.input.principal + totalInterest;
+  const totalPayable = currentCalculation.input.principal + totalInterest + (currentCalculation.input.processingFees ?? 0);
 
   return {
     input: currentCalculation.input,

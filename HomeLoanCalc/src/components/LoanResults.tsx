@@ -1,4 +1,5 @@
 import type { LoanCalculation } from '../engine';
+import { lazy, Suspense, useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
@@ -6,7 +7,7 @@ import Stack from '@mui/material/Stack';
 import { ExpandableSection } from './ExpandableSection';
 import { AmortizationTable } from './AmortizationTable';
 import { SavingsSuggestion } from './SavingsSuggestion';
-import { LoanCharts } from './LoanCharts';
+const LazyLoanCharts = lazy(() => import('./LoanCharts').then((module) => ({ default: module.LoanCharts })));
 
 interface LoanResultsProps {
   calculation: LoanCalculation | null;
@@ -164,15 +165,21 @@ export function LoanSummaryPanel({ calculation, isLoading }: LoanResultsProps) {
                 <div className="space-y-3 text-sm text-slate-700">
                   <div className="flex items-center justify-between gap-6">
                     <span className="font-medium">Principal amount: </span>
-                    <span className="font-semibold" style={{ color: '#1d4ed8' }}>₹{input.principal.toLocaleString('en-IN')}</span>
+                    <span className="font-semibold" style={{ color: '#1d4ed8' }}>
+                      ₹{input.principal.toLocaleString('en-IN')}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between gap-6">
                     <span className="font-medium">Total interest: </span>
-                    <span className="font-semibold" style={{ color: '#1d4ed8' }}>₹{totalInterest.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                    <span className="font-semibold" style={{ color: '#1d4ed8' }}>
+                      ₹{totalInterest.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between gap-6">
                     <span className="font-medium">Processing fees </span>
-                    <span className="font-semibold" style={{ color: '#1d4ed8' }}>₹0</span>
+                    <span className="font-semibold" style={{ color: '#1d4ed8' }}>
+                      ₹{(input.processingFees ?? 0).toLocaleString('en-IN')}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between gap-6">
                     <span className="font-medium">Pre-payment: </span>
@@ -180,7 +187,9 @@ export function LoanSummaryPanel({ calculation, isLoading }: LoanResultsProps) {
                   </div>
                   <div className="flex items-center justify-between gap-6 pt-2 border-t border-slate-200">
                     <span className="font-semibold">{isEmiStarted ? 'Amount pending: ' : 'Total amount paid: '}</span>
-                    <span className="font-bold" style={{ color: '#1e40af' }}>₹{(input.principal + totalInterest).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
+                    <span className="font-bold" style={{ color: '#1e40af' }}>
+                      ₹{(input.principal + totalInterest + (input.processingFees ?? 0)).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                    </span>
                   </div>
                 </div>
               </Paper>
@@ -383,11 +392,29 @@ export function AmortizationSection({ calculation }: { calculation: LoanCalculat
 }
 
 export function VisualizationSection({ calculation }: { calculation: LoanCalculation }) {
+  const [chartsOpen, setChartsOpen] = useState(false);
+
   return (
-    <ExpandableSection title="Visualizations" icon="📊" defaultOpen={true}>
-      <div className="w-full overflow-x-auto">
-        <LoanCharts calculation={calculation} />
-      </div>
+    <ExpandableSection
+      title="Visualizations"
+      icon="📊"
+      open={chartsOpen}
+      onToggle={setChartsOpen}
+      defaultOpen={false}
+    >
+      {chartsOpen ? (
+        <Suspense
+          fallback={
+            <div className="w-full rounded-lg border border-gray-200 bg-white p-6 text-center text-sm text-gray-500">
+              Loading charts…
+            </div>
+          }
+        >
+          <div className="w-full overflow-x-auto">
+            <LazyLoanCharts calculation={calculation} />
+          </div>
+        </Suspense>
+      ) : null}
     </ExpandableSection>
   );
 }

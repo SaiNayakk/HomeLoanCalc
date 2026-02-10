@@ -27,12 +27,12 @@ import {
   AmortizationSection,
   VisualizationSection,
 } from './components';
-import { useDebounce } from './hooks/useDebounce';
 
 const DEFAULT_INPUT: LoanInput = {
   principal: 5000000,
   annualRate: 7.5,
   tenureMonths: 240,
+  processingFees: 0,
   emiStartDate: new Date().toISOString().split('T')[0],
 };
 
@@ -66,9 +66,9 @@ function App() {
     stepUpPercentage: 10,
     intervalMonths: 12,
   });
-  const debouncedInput = useDebounce(input, 2000);
-  const debouncedPrepayment = useDebounce(prepayment, 2000);
-  const isCalculating = debouncedInput !== input;
+  const debouncedInput = input;
+  const debouncedPrepayment = prepayment;
+  const isCalculating = false;
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);

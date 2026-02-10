@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://loancalc-saiworks.nncs.in/sitemap.xml

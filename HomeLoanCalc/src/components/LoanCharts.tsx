@@ -1,4 +1,5 @@
 import type { LoanCalculation } from '../engine';
+import { useEffect, useState } from 'react';
 import {
   LineChart,
   Line,
@@ -20,6 +21,29 @@ interface ChartsProps {
 
 export function LoanCharts({ calculation }: ChartsProps) {
   const { schedule, input } = calculation;
+  const [visibleCount, setVisibleCount] = useState(0);
+
+  useEffect(() => {
+    let isMounted = true;
+    const totalCharts = 5;
+    setVisibleCount(1);
+
+    const timers: Array<ReturnType<typeof setTimeout>> = [];
+    for (let i = 2; i <= totalCharts; i += 1) {
+      timers.push(
+        setTimeout(() => {
+          if (isMounted) {
+            setVisibleCount(i);
+          }
+        }, (i - 1) * 350)
+      );
+    }
+
+    return () => {
+      isMounted = false;
+      timers.forEach(clearTimeout);
+    };
+  }, [calculation]);
 
   const formatShortINR = (value: number) => {
     const abs = Math.abs(value);
@@ -105,7 +129,8 @@ export function LoanCharts({ calculation }: ChartsProps) {
   return (
     <div className="space-y-10">
       {/* Chart 1: Loan Balance Decline */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      {visibleCount >= 1 && (
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">📉 Loan Balance Over Time</h3>
         <p className="text-sm text-gray-600 mb-10">Watch your loan balance decrease with each payment</p>
         <div className="h-px w-full bg-gray-200 mb-8"></div>
@@ -141,9 +166,11 @@ export function LoanCharts({ calculation }: ChartsProps) {
           </ResponsiveContainer>
         </div>
       </div>
+      )}
 
       {/* Chart 2: Principal vs Interest in EMI */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      {visibleCount >= 2 && (
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           💰 Principal vs Interest Breakdown by Month
         </h3>
@@ -177,9 +204,11 @@ export function LoanCharts({ calculation }: ChartsProps) {
           </ResponsiveContainer>
         </div>
       </div>
+      )}
 
       {/* Chart 3: Year-by-Year Principal vs Interest */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      {visibleCount >= 3 && (
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">📊 Year-by-Year Breakdown</h3>
         <p className="text-sm text-gray-600 mb-6">
           Compare principal repaid vs interest paid each year
@@ -211,9 +240,11 @@ export function LoanCharts({ calculation }: ChartsProps) {
           </ResponsiveContainer>
         </div>
       </div>
+      )}
 
       {/* Chart 4: Cumulative Interest & Principal */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      {visibleCount >= 4 && (
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           📈 Cumulative Principal vs Interest Paid
         </h3>
@@ -259,11 +290,13 @@ export function LoanCharts({ calculation }: ChartsProps) {
           </ResponsiveContainer>
         </div>
       </div>
+      )}
 
       {/* Pie charts removed per request (shown in summary) */}
 
       {/* Chart 7: Interest Rate Impact */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      {visibleCount >= 5 && (
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">📊 Monthly Interest Paid</h3>
         <p className="text-sm text-gray-600 mb-6">
           Watch how your monthly interest payment decreases over time
@@ -300,6 +333,7 @@ export function LoanCharts({ calculation }: ChartsProps) {
           </ResponsiveContainer>
         </div>
       </div>
+      )}
     </div>
   );
 }
