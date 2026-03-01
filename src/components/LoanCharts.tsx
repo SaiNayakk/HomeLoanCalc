@@ -20,7 +20,7 @@ interface ChartsProps {
 }
 
 export function LoanCharts({ calculation }: ChartsProps) {
-  const { schedule, input } = calculation;
+  const { schedule } = calculation;
   const [visibleCount, setVisibleCount] = useState(0);
 
   useEffect(() => {
