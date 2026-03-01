@@ -6,7 +6,7 @@ interface SavingsSuggestionProps {
 }
 
 export function SavingsSuggestion({ calculation }: SavingsSuggestionProps) {
-  const { input, actualTenureMonths } = calculation;
+  const { input } = calculation;
   const baseCalculation = generateAmortizationSchedule(input);
   const baseTotalInterest = baseCalculation.totalInterest;
   const baseTotalPayable = baseCalculation.totalPayable;

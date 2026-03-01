@@ -152,7 +152,6 @@ export function AdvancedOptions({
   };
 
   const ranges = ensureRanges();
-  const isLastRangeLocked = ranges.length > 0 && endDate ? ranges[ranges.length - 1].endDate === endDate : false;
   const isLastEndValid = ranges.length > 0 && endDate ? ranges[ranges.length - 1].endDate === endDate : false;
 
   const handleApplyRates = () => {
