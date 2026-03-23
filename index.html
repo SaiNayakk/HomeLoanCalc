@@ -1,93 +1,220 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-IN">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0f172a" />
-    <title>HomeLoanCalc | Smart Home Loan EMI Calculator</title>
-    <meta
-      name="description"
-      content="HomeLoanCalc is a smart home loan EMI calculator with prepayment, rate change, and amortization insights to help you plan your mortgage."
-    />
+    <meta name="theme-color" content="#2563eb" />
+
+    <!-- Primary SEO -->
+    <title>Home Loan EMI Calculator India – Free Housing Loan Calculator | HomeLoanCalc</title>
+    <meta name="description" content="Free home loan EMI calculator for India. Instantly calculate monthly EMI, total interest, amortization schedule, prepayment savings & tax benefits under 80C and 24B. Supports variable rates & step-up EMI." />
+    <meta name="keywords" content="home loan EMI calculator, EMI calculator India, housing loan calculator, home loan calculator, mortgage calculator India, home loan prepayment calculator, SBI home loan EMI, HDFC home loan calculator, 80C 24B tax benefit calculator, amortization schedule India" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    <meta name="author" content="HomeLoanCalc" />
+
+    <!-- Geo targeting for India -->
+    <meta name="geo.region" content="IN" />
+    <meta name="geo.placename" content="India" />
+    <meta name="language" content="English" />
+
+    <!-- Canonical -->
     <link rel="canonical" href="https://loancalc-saiworks.nncs.in/" />
+
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="HomeLoanCalc | Smart Home Loan EMI Calculator" />
-    <meta
-      property="og:description"
-      content="Calculate EMI, compare scenarios, and visualize your home loan payoff with prepayments and rate changes."
-    />
+    <meta property="og:site_name" content="HomeLoanCalc" />
+    <meta property="og:title" content="Home Loan EMI Calculator India – Free Housing Loan Calculator" />
+    <meta property="og:description" content="Calculate monthly EMI, total interest, amortization schedule, prepayment savings and tax benefits instantly. India's most comprehensive free home loan calculator." />
     <meta property="og:url" content="https://loancalc-saiworks.nncs.in/" />
     <meta property="og:image" content="https://loancalc-saiworks.nncs.in/logo.png" />
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:title" content="HomeLoanCalc | Smart Home Loan EMI Calculator" />
-    <meta
-      name="twitter:description"
-      content="Plan your mortgage with EMI, prepayment, and rate change simulations."
-    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Home Loan EMI Calculator India – Free Housing Loan Calculator" />
+    <meta name="twitter:description" content="Calculate monthly EMI, total interest, prepayment savings and tax benefits (80C + 24B). India's most comprehensive free home loan calculator." />
     <meta name="twitter:image" content="https://loancalc-saiworks.nncs.in/logo.png" />
+
+    <!-- Structured Data: SoftwareApplication -->
     <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "HomeLoanCalc",
-        "url": "https://loancalc-saiworks.nncs.in/",
-        "applicationCategory": "FinanceApplication",
-        "operatingSystem": "Web",
-        "description": "Smart home loan EMI calculator with prepayment, rate change, and amortization insights."
-      }
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "HomeLoanCalc – Home Loan EMI Calculator",
+      "url": "https://loancalc-saiworks.nncs.in/",
+      "applicationCategory": "FinanceApplication",
+      "applicationSubCategory": "Loan Calculator",
+      "operatingSystem": "Web",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" },
+      "description": "Free home loan EMI calculator for India. Calculate monthly EMI, total interest payable, amortization schedule, prepayment savings, and income tax benefits under Section 80C and 24B.",
+      "featureList": [
+        "Monthly EMI calculation",
+        "Full amortization schedule",
+        "Prepayment impact analysis",
+        "Variable interest rate simulation",
+        "EMI step-up planning",
+        "Tax benefit calculator (Section 80C and 24B)",
+        "Loan eligibility calculator",
+        "Down payment optimizer",
+        "Rent vs buy comparison",
+        "CSV and PDF export",
+        "Scenario comparison"
+      ],
+      "screenshot": "https://loancalc-saiworks.nncs.in/logo.png",
+      "inLanguage": "en-IN",
+      "isAccessibleForFree": true,
+      "keywords": "home loan EMI calculator, housing loan calculator, mortgage calculator India"
+    }
     </script>
+
+    <!-- Structured Data: FAQPage -->
     <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "What is EMI and how is it calculated?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "EMI (Equated Monthly Installment) is your fixed monthly repayment. It is calculated using the principal, interest rate, and tenure so that each payment includes both interest and principal."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How does tenure affect total interest?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "A longer tenure lowers EMI but increases total interest paid. A shorter tenure increases EMI but reduces interest cost."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "What is the benefit of prepaying a home loan?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Prepayments reduce outstanding principal, which cuts interest and can shorten the loan tenure significantly."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Is it better to reduce EMI or tenure when rates change?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Reducing tenure saves more interest in the long run, while reducing EMI improves monthly cash flow. Choose based on your financial comfort."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "How do rate changes affect my loan?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Higher rates increase interest cost; lower rates reduce it. You can choose to keep EMI the same and shorten tenure or keep tenure and reduce EMI."
-            }
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is EMI and how is it calculated?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "EMI (Equated Monthly Installment) is a fixed monthly repayment amount for your home loan. It is calculated using the formula: EMI = P × r × (1+r)^n / ((1+r)^n - 1), where P is the loan amount, r is the monthly interest rate (annual rate ÷ 12 ÷ 100), and n is the tenure in months."
           }
-        ]
-      }
+        },
+        {
+          "@type": "Question",
+          "name": "How much home loan EMI for ₹50 lakh?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "For a ₹50 lakh home loan at 8.5% interest rate for 20 years, the monthly EMI is approximately ₹43,391. At 7.5% for 20 years, the EMI is approximately ₹40,280. Use HomeLoanCalc to get the exact EMI for your specific rate and tenure."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much home loan EMI for ₹1 crore?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "For a ₹1 crore home loan at 8.5% for 20 years, the monthly EMI is approximately ₹86,782. At 7.5% for 20 years, the EMI is approximately ₹80,559. The exact amount depends on the bank's interest rate and your chosen tenure."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How does tenure affect total interest on a home loan?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A longer tenure reduces your monthly EMI but significantly increases the total interest paid. For example, a ₹50 lakh loan at 8% — a 20-year tenure costs about ₹50.4 lakh in interest, while a 10-year tenure costs only ₹24.3 lakh. Choosing a shorter tenure saves substantial interest."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the benefit of prepaying a home loan?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Prepayments directly reduce the outstanding principal, which lowers the interest charged in subsequent months. Even a small monthly prepayment of ₹5,000 on a ₹50 lakh loan can save over ₹8 lakh in interest and close the loan 3–4 years earlier. Use the prepayment calculator to see exact savings."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What tax benefits are available on home loans in India?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Home loan borrowers in India can claim: (1) Section 80C — deduction up to ₹1.5 lakh per year on principal repayment; (2) Section 24B — deduction up to ₹2 lakh per year on interest paid for self-occupied property. HomeLoanCalc's tax benefit section shows your exact savings year by year."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is it better to reduce EMI or tenure when interest rates change?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Reducing the tenure saves more total interest but keeps your EMI unchanged. Reducing the EMI provides immediate cash-flow relief but you pay more interest overall. If you can afford the current EMI, reducing tenure is the better financial choice."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much home loan can I get on my salary?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most banks allow a maximum EMI of 40–50% of your net monthly income. For example, with a ₹1 lakh monthly salary and no existing EMIs, you may be eligible for a home loan EMI of up to ₹50,000, which translates to approximately ₹62 lakh at 8.5% for 20 years. Use HomeLoanCalc's eligibility calculator for a precise estimate."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <!-- Structured Data: HowTo -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "How to Calculate Home Loan EMI",
+      "description": "Step-by-step guide to calculating your home loan EMI using HomeLoanCalc.",
+      "totalTime": "PT1M",
+      "tool": [{ "@type": "HowToTool", "name": "HomeLoanCalc EMI Calculator" }],
+      "step": [
+        {
+          "@type": "HowToStep",
+          "name": "Enter Loan Amount",
+          "text": "Enter your home loan amount (principal) in the Loan Amount field. You can also use the slider or quick preset chips for common amounts like ₹20L, ₹50L, ₹1Cr."
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Set Interest Rate",
+          "text": "Enter your bank's annual interest rate. Typical home loan rates in India range from 8% to 10%."
+        },
+        {
+          "@type": "HowToStep",
+          "name": "Choose Loan Tenure",
+          "text": "Set the loan tenure in months. Common tenures are 120 months (10 years), 180 months (15 years), 240 months (20 years), and 300 months (25 years)."
+        },
+        {
+          "@type": "HowToStep",
+          "name": "View Your EMI and Breakdown",
+          "text": "Your monthly EMI, total interest payable, and full amortization schedule are displayed instantly. You can also explore prepayment scenarios, tax benefits, and rate change simulations."
+        }
+      ]
+    }
     </script>
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- Crawlable fallback for search engines -->
+    <noscript>
+      <main style="font-family:Arial,sans-serif;max-width:900px;margin:0 auto;padding:20px">
+        <h1>Home Loan EMI Calculator India – Free Housing Loan Calculator</h1>
+        <p>HomeLoanCalc is a free, comprehensive home loan EMI calculator for India. Instantly calculate your monthly EMI, total interest, amortization schedule, prepayment savings, and tax benefits under Section 80C and 24B.</p>
+        <h2>Features</h2>
+        <ul>
+          <li>Monthly EMI calculation for any loan amount, rate, and tenure</li>
+          <li>Full amortization schedule (monthly and yearly view)</li>
+          <li>Prepayment impact — see how extra payments save interest and reduce tenure</li>
+          <li>Variable interest rate simulation</li>
+          <li>EMI step-up planner</li>
+          <li>Tax benefit calculator (Section 80C and Section 24B)</li>
+          <li>Loan eligibility calculator based on income</li>
+          <li>Down payment optimizer</li>
+          <li>Rent vs Buy comparison</li>
+          <li>Export as CSV, PDF or share via link</li>
+        </ul>
+        <h2>EMI Formula</h2>
+        <p>EMI = P × r × (1+r)^n / ((1+r)^n – 1), where P = principal, r = monthly interest rate, n = tenure in months.</p>
+        <h2>Common EMI Examples</h2>
+        <table border="1" cellpadding="8">
+          <thead><tr><th>Loan Amount</th><th>Rate</th><th>Tenure</th><th>Monthly EMI</th></tr></thead>
+          <tbody>
+            <tr><td>₹20 Lakh</td><td>8.5%</td><td>20 years</td><td>₹17,356</td></tr>
+            <tr><td>₹30 Lakh</td><td>8.5%</td><td>20 years</td><td>₹26,035</td></tr>
+            <tr><td>₹50 Lakh</td><td>8.5%</td><td>20 years</td><td>₹43,391</td></tr>
+            <tr><td>₹75 Lakh</td><td>8.5%</td><td>20 years</td><td>₹65,087</td></tr>
+            <tr><td>₹1 Crore</td><td>8.5%</td><td>20 years</td><td>₹86,782</td></tr>
+          </tbody>
+        </table>
+      </main>
+    </noscript>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

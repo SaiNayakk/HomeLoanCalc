@@ -10,6 +10,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import { formatCurrency } from '../utils/formatters';
 
 interface ScenarioComparisonProps {
   baseCalculation: LoanCalculation;
@@ -29,13 +30,13 @@ export function ScenarioComparison({ baseCalculation, scenarios }: ScenarioCompa
       variant="outlined"
       sx={{
         borderRadius: 3,
-        borderColor: '#e2e8f0',
+        borderColor: 'divider',
         boxShadow: '0 12px 24px rgba(15, 23, 42, 0.06)',
-        background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+        bgcolor: 'background.paper',
       }}
     >
       <Box px={3} pt={3} pb={2}>
-        <Typography fontWeight={700} fontSize={16} color="#0f172a">
+        <Typography fontWeight={700} fontSize={16} color="text.primary">
           🔄 Scenario Comparison
         </Typography>
       </Box>
@@ -43,57 +44,56 @@ export function ScenarioComparison({ baseCalculation, scenarios }: ScenarioCompa
       <TableContainer>
         <Table size="small">
           <TableHead>
-            <TableRow sx={{ backgroundColor: '#f1f5f9' }}>
-              <TableCell sx={{ fontWeight: 700, color: '#0f172a' }}>Scenario</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 700, color: '#0f172a' }}>EMI</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 700, color: '#0f172a' }}>Interest</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 700, color: '#0f172a' }}>Total</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 700, color: '#0f172a' }}>Months</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 700, color: '#0f172a' }}>Savings</TableCell>
+            <TableRow sx={{ bgcolor: 'background.default' }}>
+              <TableCell sx={{ fontWeight: 700, color: 'text.primary' }}>Scenario</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 700, color: 'text.primary' }}>EMI</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 700, color: 'text.primary' }}>Interest</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 700, color: 'text.primary' }}>Total</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 700, color: 'text.primary' }}>Months</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 700, color: 'text.primary' }}>Savings</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            <TableRow sx={{ backgroundColor: '#f8fafc' }}>
-              <TableCell sx={{ fontWeight: 600, color: '#0f172a' }}>Base</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 700, color: '#1d4ed8' }}>
-                ₹{baseCalculation.monthlyEMI.toLocaleString('en-IN')}
+            <TableRow sx={{ bgcolor: 'background.default' }}>
+              <TableCell sx={{ fontWeight: 600, color: 'text.primary' }}>Base</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                {formatCurrency(baseCalculation.monthlyEMI)}
               </TableCell>
-              <TableCell align="right" sx={{ fontWeight: 700, color: '#7c3aed' }}>
-                ₹{baseCalculation.totalInterest.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+              <TableCell align="right" sx={{ fontWeight: 700, color: 'secondary.main' }}>
+                {formatCurrency(baseCalculation.totalInterest)}
               </TableCell>
-              <TableCell align="right" sx={{ fontWeight: 700, color: '#0f172a' }}>
-                ₹{baseCalculation.totalPayable.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+              <TableCell align="right" sx={{ fontWeight: 700, color: 'text.primary' }}>
+                {formatCurrency(baseCalculation.totalPayable)}
               </TableCell>
-              <TableCell align="right" sx={{ fontWeight: 700, color: '#0f172a' }}>
+              <TableCell align="right" sx={{ fontWeight: 700, color: 'text.primary' }}>
                 {baseCalculation.actualTenureMonths}
               </TableCell>
-              <TableCell align="right" sx={{ color: '#94a3b8' }}>—</TableCell>
+              <TableCell align="right" sx={{ color: 'text.disabled' }}>—</TableCell>
             </TableRow>
 
             {scenarios.map((scenario, idx) => {
               const reference = idx === 0 ? baseCalculation : scenarios[idx - 1].calculation;
               const totalSaved = reference.totalPayable - scenario.calculation.totalPayable;
               const totalSavedPercent = ((totalSaved / reference.totalPayable) * 100).toFixed(1);
-              const tenureSaved =
-                reference.actualTenureMonths - scenario.calculation.actualTenureMonths;
+              const tenureSaved = reference.actualTenureMonths - scenario.calculation.actualTenureMonths;
 
               return (
                 <TableRow key={idx} hover>
-                  <TableCell sx={{ fontWeight: 600, color: '#0f172a' }}>{scenario.name}</TableCell>
-                  <TableCell align="right" sx={{ color: '#0f172a', fontWeight: 600 }}>
-                    ₹{scenario.calculation.monthlyEMI.toLocaleString('en-IN')}
+                  <TableCell sx={{ fontWeight: 600, color: 'text.primary' }}>{scenario.name}</TableCell>
+                  <TableCell align="right" sx={{ color: 'text.primary', fontWeight: 600 }}>
+                    {formatCurrency(scenario.calculation.monthlyEMI)}
                   </TableCell>
-                  <TableCell align="right" sx={{ color: '#7c3aed', fontWeight: 600 }}>
-                    ₹{scenario.calculation.totalInterest.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                  <TableCell align="right" sx={{ color: 'secondary.main', fontWeight: 600 }}>
+                    {formatCurrency(scenario.calculation.totalInterest)}
                   </TableCell>
-                  <TableCell align="right" sx={{ color: '#0f172a', fontWeight: 600 }}>
-                    ₹{scenario.calculation.totalPayable.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                  <TableCell align="right" sx={{ color: 'text.primary', fontWeight: 600 }}>
+                    {formatCurrency(scenario.calculation.totalPayable)}
                   </TableCell>
-                  <TableCell align="right" sx={{ color: '#0f172a', fontWeight: 600 }}>
+                  <TableCell align="right" sx={{ color: 'text.primary', fontWeight: 600 }}>
                     {scenario.calculation.actualTenureMonths}
                   </TableCell>
                   <TableCell align="right" sx={{ fontWeight: 700, color: '#16a34a' }}>
-                    ₹{totalSaved.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                    {formatCurrency(totalSaved)}
                     <Box component="span" display="block" fontSize={11} color="#16a34a">
                       {totalSavedPercent}% total
                       {tenureSaved > 0 ? ` | ${tenureSaved}mo` : ''}
@@ -103,10 +103,8 @@ export function ScenarioComparison({ baseCalculation, scenarios }: ScenarioCompa
               );
             })}
             {scenarios.length > 0 && (
-              <TableRow sx={{ backgroundColor: '#f1f5f9' }}>
-                <TableCell sx={{ fontWeight: 700, color: '#0f172a' }}>
-                  Final Savings (best)
-                </TableCell>
+              <TableRow sx={{ bgcolor: 'background.default' }}>
+                <TableCell sx={{ fontWeight: 700, color: 'text.primary' }}>Final Savings (best)</TableCell>
                 <TableCell />
                 <TableCell />
                 <TableCell />
@@ -115,7 +113,7 @@ export function ScenarioComparison({ baseCalculation, scenarios }: ScenarioCompa
                   {(() => {
                     const finalScenario = scenarios[scenarios.length - 1];
                     const finalSaved = baseCalculation.totalPayable - finalScenario.calculation.totalPayable;
-                    return `₹${finalSaved.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
+                    return formatCurrency(finalSaved);
                   })()}
                 </TableCell>
               </TableRow>

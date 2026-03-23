@@ -1,4 +1,5 @@
 import type { AmortizationRow } from '../engine';
+import { useState } from 'react';
 import {
   Box,
   Paper,
@@ -7,13 +8,27 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from '@mui/material';
+import { formatCurrency } from '../utils/formatters';
 
 interface AmortizationTableProps {
   schedule: AmortizationRow[];
   emiStartDate?: string;
+}
+
+interface YearlyRow {
+  year: number;
+  openingBalance: number;
+  totalEMI: number;
+  totalPrincipal: number;
+  totalInterest: number;
+  closingBalance: number;
+  startDate?: string;
 }
 
 function getDateForMonth(startDate: string | undefined, monthOffset: number): string {
@@ -23,78 +38,193 @@ function getDateForMonth(startDate: string | undefined, monthOffset: number): st
   return date.toLocaleDateString('en-IN', { month: 'short', year: 'numeric' });
 }
 
+function getYearLabel(startDate: string | undefined, year: number): string {
+  if (!startDate) return `Year ${year}`;
+  const date = new Date(startDate);
+  date.setMonth(date.getMonth() + (year - 1) * 12);
+  return `${date.getFullYear()} (Year ${year})`;
+}
+
+function aggregateByYear(schedule: AmortizationRow[]): YearlyRow[] {
+  const map = new Map<number, YearlyRow>();
+  for (const row of schedule) {
+    const year = Math.ceil(row.month / 12);
+    if (!map.has(year)) {
+      map.set(year, {
+        year,
+        openingBalance: row.openingBalance,
+        totalEMI: 0,
+        totalPrincipal: 0,
+        totalInterest: 0,
+        closingBalance: 0,
+      });
+    }
+    const y = map.get(year)!;
+    y.totalEMI += row.emiPayment;
+    y.totalPrincipal += row.principal;
+    y.totalInterest += row.interest;
+    y.closingBalance = row.closingBalance;
+  }
+  return Array.from(map.values());
+}
+
+const ROWS_PER_PAGE = 24;
+
 export function AmortizationTable({ schedule, emiStartDate }: AmortizationTableProps) {
-  const displayRows =
-    schedule.length <= 24
-      ? schedule
-      : [
-          ...schedule.slice(0, 12),
-          { month: 0, openingBalance: 0, emiPayment: 0, principal: 0, interest: 0, closingBalance: 0 } as AmortizationRow,
-          ...schedule.slice(-11),
-        ];
+  const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
+  const [page, setPage] = useState(0);
+
+  const yearlyRows = aggregateByYear(schedule);
+
+  const handleViewChange = (_: React.MouseEvent<HTMLElement>, newMode: 'monthly' | 'yearly' | null) => {
+    if (newMode !== null) {
+      setViewMode(newMode);
+      setPage(0);
+    }
+  };
+
+  const headCellSx = { fontWeight: 700, color: 'text.primary', bgcolor: 'background.default' };
+
+  if (viewMode === 'yearly') {
+    return (
+      <Box>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1.5 }}>
+          <ToggleButtonGroup
+            value={viewMode}
+            exclusive
+            onChange={handleViewChange}
+            size="small"
+          >
+            <ToggleButton value="monthly" sx={{ fontWeight: 600, fontSize: 12 }}>Monthly</ToggleButton>
+            <ToggleButton value="yearly" sx={{ fontWeight: 600, fontSize: 12 }}>Yearly</ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
+        <TableContainer
+          component={Paper}
+          variant="outlined"
+          sx={{ borderRadius: 2, borderColor: 'divider', boxShadow: 'none' }}
+        >
+          <Table size="small" stickyHeader>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={headCellSx}>Year</TableCell>
+                <TableCell align="right" sx={headCellSx}>Opening Balance</TableCell>
+                <TableCell align="right" sx={headCellSx}>Total EMI</TableCell>
+                <TableCell align="right" sx={headCellSx}>Principal</TableCell>
+                <TableCell align="right" sx={headCellSx}>Interest</TableCell>
+                <TableCell align="right" sx={headCellSx}>Closing Balance</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {yearlyRows.map((row) => (
+                <TableRow
+                  key={row.year}
+                  hover
+                  sx={{
+                    bgcolor:
+                      row.year === 1
+                        ? 'rgba(99,102,241,0.05)'
+                        : row.year === yearlyRows.length
+                          ? 'rgba(16,185,129,0.05)'
+                          : 'inherit',
+                  }}
+                >
+                  <TableCell sx={{ fontWeight: 600, color: 'text.primary' }}>
+                    {getYearLabel(emiStartDate, row.year)}
+                  </TableCell>
+                  <TableCell align="right" sx={{ color: 'text.secondary' }}>
+                    {formatCurrency(row.openingBalance)}
+                  </TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                    {formatCurrency(row.totalEMI)}
+                  </TableCell>
+                  <TableCell align="right" sx={{ color: '#16a34a', fontWeight: 600 }}>
+                    {formatCurrency(row.totalPrincipal)}
+                  </TableCell>
+                  <TableCell align="right" sx={{ color: '#f97316', fontWeight: 600 }}>
+                    {formatCurrency(row.totalInterest)}
+                  </TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 600, color: 'text.secondary' }}>
+                    {formatCurrency(row.closingBalance)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Paper
+          variant="outlined"
+          sx={{ mt: 2, p: 1.5, borderRadius: 2, borderColor: 'divider', bgcolor: 'background.default', boxShadow: 'none' }}
+        >
+          <Typography fontSize={12} color="text.secondary">
+            <strong>Yearly view:</strong> Each row aggregates 12 months of EMI payments. Download CSV for monthly detail.
+          </Typography>
+        </Paper>
+      </Box>
+    );
+  }
+
+  // Monthly view with pagination
+  const totalRows = schedule.length;
+  const paginatedRows = schedule.slice(page * ROWS_PER_PAGE, (page + 1) * ROWS_PER_PAGE);
 
   return (
     <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1.5 }}>
+        <ToggleButtonGroup value={viewMode} exclusive onChange={handleViewChange} size="small">
+          <ToggleButton value="monthly" sx={{ fontWeight: 600, fontSize: 12 }}>Monthly</ToggleButton>
+          <ToggleButton value="yearly" sx={{ fontWeight: 600, fontSize: 12 }}>Yearly</ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
       <TableContainer
         component={Paper}
         variant="outlined"
-        sx={{
-          borderRadius: 2,
-          borderColor: '#e2e8f0',
-          boxShadow: 'none',
-        }}
+        sx={{ borderRadius: 2, borderColor: 'divider', boxShadow: 'none' }}
       >
         <Table size="small" stickyHeader>
           <TableHead>
-            <TableRow sx={{ backgroundColor: '#f8fafc' }}>
-              <TableCell sx={{ fontWeight: 700, color: '#0f172a' }}>Date / Month</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 700, color: '#0f172a' }}>Opening Balance</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 700, color: '#0f172a' }}>EMI</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 700, color: '#0f172a' }}>Principal</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 700, color: '#0f172a' }}>Interest</TableCell>
-              <TableCell align="right" sx={{ fontWeight: 700, color: '#0f172a' }}>Closing Balance</TableCell>
+            <TableRow>
+              <TableCell sx={headCellSx}>Date / Month</TableCell>
+              <TableCell align="right" sx={headCellSx}>Opening Balance</TableCell>
+              <TableCell align="right" sx={headCellSx}>EMI</TableCell>
+              <TableCell align="right" sx={headCellSx}>Principal</TableCell>
+              <TableCell align="right" sx={headCellSx}>Interest</TableCell>
+              <TableCell align="right" sx={headCellSx}>Closing Balance</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {displayRows.map((row, idx) => {
-              if (row.month === 0) {
-                return (
-                  <TableRow key={`separator-${idx}`} sx={{ backgroundColor: '#f8fafc' }}>
-                    <TableCell colSpan={6} align="center" sx={{ fontSize: 12, color: '#64748b', fontWeight: 700 }}>
-                      ⋯ {schedule.length - 23} months omitted ⋯
-                    </TableCell>
-                  </TableRow>
-                );
-              }
-
+            {paginatedRows.map((row) => {
               const isFirstMonth = row.month === 1;
               const isLastMonth = row.month === schedule[schedule.length - 1].month;
-
               return (
                 <TableRow
                   key={row.month}
                   hover
                   sx={{
-                    backgroundColor: isFirstMonth ? '#eef2ff' : isLastMonth ? '#ecfdf5' : 'inherit',
+                    bgcolor: isFirstMonth
+                      ? 'rgba(99,102,241,0.05)'
+                      : isLastMonth
+                        ? 'rgba(16,185,129,0.05)'
+                        : 'inherit',
                   }}
                 >
-                  <TableCell sx={{ fontWeight: 600 }}>
+                  <TableCell sx={{ fontWeight: 600, color: 'text.primary' }}>
                     {getDateForMonth(emiStartDate, row.month)}
                   </TableCell>
-                  <TableCell align="right">
-                    ₹{row.openingBalance.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                  <TableCell align="right" sx={{ color: 'text.secondary' }}>
+                    {formatCurrency(row.openingBalance)}
                   </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 600 }}>
-                    ₹{row.emiPayment.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                  <TableCell align="right" sx={{ fontWeight: 600, color: 'text.primary' }}>
+                    {formatCurrency(row.emiPayment)}
                   </TableCell>
                   <TableCell align="right" sx={{ color: '#16a34a', fontWeight: 600 }}>
-                    ₹{row.principal.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                    {formatCurrency(row.principal)}
                   </TableCell>
                   <TableCell align="right" sx={{ color: '#f97316', fontWeight: 600 }}>
-                    ₹{row.interest.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                    {formatCurrency(row.interest)}
                   </TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 600 }}>
-                    ₹{row.closingBalance.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+                  <TableCell align="right" sx={{ fontWeight: 600, color: 'text.secondary' }}>
+                    {formatCurrency(row.closingBalance)}
                   </TableCell>
                 </TableRow>
               );
@@ -102,21 +232,16 @@ export function AmortizationTable({ schedule, emiStartDate }: AmortizationTableP
           </TableBody>
         </Table>
       </TableContainer>
-      <Paper
-        variant="outlined"
-        sx={{
-          mt: 2,
-          p: 1.5,
-          borderRadius: 2,
-          borderColor: '#e2e8f0',
-          backgroundColor: '#f8fafc',
-          boxShadow: 'none',
-        }}
-      >
-        <Typography fontSize={12} color="#475569">
-          <strong>Legend:</strong> Table shows first 12 and last 12 months. Download CSV for the full schedule.
-        </Typography>
-      </Paper>
+      <TablePagination
+        component="div"
+        count={totalRows}
+        page={page}
+        onPageChange={(_, newPage) => setPage(newPage)}
+        rowsPerPage={ROWS_PER_PAGE}
+        rowsPerPageOptions={[ROWS_PER_PAGE]}
+        labelDisplayedRows={({ from, to, count }) => `Months ${from}–${to} of ${count}`}
+        sx={{ borderTop: '1px solid', borderColor: 'divider' }}
+      />
     </Box>
   );
 }
