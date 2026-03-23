@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# TypeScript incremental build cache
+*.tsbuildinfo
+
+# Claude Code assistant files
+.claude/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

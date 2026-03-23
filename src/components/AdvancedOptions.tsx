@@ -170,14 +170,14 @@ export function AdvancedOptions({
         sx={{
           p: 2.5,
           borderRadius: 3,
-          borderColor: '#e2e8f0',
-          boxShadow: '0 10px 20px rgba(15, 23, 42, 0.06)',
-          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+          borderColor: 'divider',
+          boxShadow: 'none',
+          bgcolor: 'background.paper',
         }}
       >
         <Stack spacing={2}>
           <Box display="flex" alignItems="center" justifyContent="space-between">
-            <Typography fontWeight={700} fontSize={13} letterSpacing={1} textTransform="uppercase" color="#0f172a">
+            <Typography fontWeight={700} fontSize={13} letterSpacing={1} textTransform="uppercase" color="text.primary">
               Rate Changes
             </Typography>
             <FormControlLabel
@@ -191,7 +191,7 @@ export function AdvancedOptions({
               label=""
             />
           </Box>
-          <Typography fontSize={12} color="#64748b">
+          <Typography fontSize={12} color="text.secondary">
             Add multiple rate periods. Dates are kept continuous automatically, and the last period ends with your loan.
           </Typography>
 
@@ -224,10 +224,10 @@ export function AdvancedOptions({
                   <Paper
                     key={`${range.startDate}-${idx}`}
                     variant="outlined"
-                    sx={{ p: 2, borderRadius: 2, borderColor: '#e2e8f0' }}
+                    sx={{ p: 2, borderRadius: 2, borderColor: 'divider' }}
                   >
                     <Stack spacing={2}>
-                      <Typography fontWeight={700} fontSize={12} color="#0f172a">
+                      <Typography fontWeight={700} fontSize={12} color="text.primary">
                         Period {idx + 1}
                       </Typography>
                       <TextField
@@ -256,45 +256,28 @@ export function AdvancedOptions({
                         fullWidth
                       />
                       {idx > 0 && (
-                        <button
-                          type="button"
-                          style={{
-                            alignSelf: 'flex-start',
-                            border: '1px solid #e2e8f0',
-                            borderRadius: 999,
-                            padding: '6px 12px',
-                            background: '#fff',
-                            fontSize: 12,
-                            color: '#0f172a',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                          }}
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          color="error"
+                          sx={{ alignSelf: 'flex-start', textTransform: 'none', fontWeight: 600, borderRadius: 999 }}
                           onClick={() => handleRemoveRange(idx)}
                         >
                           Remove period
-                        </button>
+                        </Button>
                       )}
                     </Stack>
                   </Paper>
                 ))}
               </Box>
-              <button
-                type="button"
-                style={{
-                  alignSelf: 'flex-start',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: 999,
-                  padding: '6px 12px',
-                  background: '#fff',
-                  fontSize: 12,
-                  color: '#0f172a',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                }}
+              <Button
+                size="small"
+                variant="outlined"
+                sx={{ alignSelf: 'flex-start', textTransform: 'none', fontWeight: 600, borderRadius: 999 }}
                 onClick={handleAddRange}
               >
                 + Add rate period
-              </button>
+              </Button>
               <Button
                 variant="contained"
                 sx={{ alignSelf: 'flex-start', textTransform: 'none', fontWeight: 600 }}
@@ -313,14 +296,14 @@ export function AdvancedOptions({
         sx={{
           p: 2.5,
           borderRadius: 3,
-          borderColor: '#e2e8f0',
-          boxShadow: '0 10px 20px rgba(15, 23, 42, 0.06)',
-          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+          borderColor: 'divider',
+          boxShadow: 'none',
+          bgcolor: 'background.paper',
         }}
       >
         <Stack spacing={2}>
           <Box display="flex" alignItems="center" justifyContent="space-between">
-            <Typography fontWeight={700} fontSize={13} letterSpacing={1} textTransform="uppercase" color="#0f172a">
+            <Typography fontWeight={700} fontSize={13} letterSpacing={1} textTransform="uppercase" color="text.primary">
               EMI Step-Up (Salary Growth)
             </Typography>
             <FormControlLabel
@@ -334,7 +317,7 @@ export function AdvancedOptions({
               label=""
             />
           </Box>
-          <Typography fontSize={12} color="#64748b">
+          <Typography fontSize={12} color="text.secondary">
             Simulate increasing EMI as your salary grows over years.
           </Typography>
 
