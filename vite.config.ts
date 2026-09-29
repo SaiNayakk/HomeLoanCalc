@@ -8,11 +8,11 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'HomeLoanCalc — Smart EMI Calculator',
+        name: 'HomeLoanCalc: home loan EMI calculator',
         short_name: 'HomeLoanCalc',
         description: 'Calculate home loan EMI, prepayments, tax benefits and more',
-        theme_color: '#2563eb',
-        background_color: '#0f172a',
+        theme_color: '#f5f2ea',
+        background_color: '#f5f2ea',
         display: 'standalone',
         orientation: 'portrait',
         scope: '/',
@@ -27,16 +27,6 @@ export default defineConfig({
       },
     }),
   ],
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'vendor-mui': ['@mui/material', '@mui/system', '@emotion/react', '@emotion/styled'],
-          'vendor-recharts': ['recharts'],
-        },
-      },
-    },
-  },
   server: {
     allowedHosts: ['loancalc-saiworks.nncs.in'],
   },
